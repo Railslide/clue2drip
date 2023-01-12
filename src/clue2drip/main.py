@@ -1,5 +1,4 @@
 import csv
-import datetime
 import json
 
 ROW_STRUCTURE = {
@@ -54,6 +53,7 @@ ROW_STRUCTURE = {
     "mood.note": "",
 }
 
+
 def get_bleeding_value(bleeding_string: str) -> int:
     """Convert Clue bleeding value to its numeric Drip counterpart"""
 
@@ -71,23 +71,25 @@ def get_bleeding_value(bleeding_string: str) -> int:
 
 def convert(clue_file: str) -> None:
     """Takes a clue file and converts it in Drip compatible csv"""
-    with open(clue_file) as fh:
+    with open(clue_file, encoding="utf-8") as fh:
         clue_data = json.load(fh)
 
     output = []
     for entry in clue_data["data"]:
         # TODO use dataclass perhaps?
-        row = dict(ROW_STRUCTURE) # make sure we don't edit the base dict
-        row["date"] = entry["day"][:10] # This is ugly, but will do for now
-        row["bleeding.value"] = get_bleeding_value(entry["period"])
-        row["bleeding.exclude"] = False
-        output.append(row)
+        row = dict(ROW_STRUCTURE)  # make sure we don't edit the base dict
+        row["date"] = entry["day"][:10]  # This is ugly, but will do for now
+        if entry.get("period"):
+            row["bleeding.value"] = get_bleeding_value(entry["period"])
+            row["bleeding.exclude"] = False
+            output.append(row)
 
-    with open("output.csv", "w") as csvfile:
+    with open("output.csv", "w", encoding="utf-8") as csvfile:
         field_names = ROW_STRUCTURE.keys()
         writer = csv.DictWriter(csvfile, fieldnames=field_names)
         writer.writeheader()
         writer.writerows(output)
+
 
 if __name__ == "__main__":
     convert("../../test_data/cluebackup.cluedata")

@@ -1,0 +1,14 @@
+[tool.isort]
+# Play nice with Black
+profile = "black"
+
+[tool.pylint.'FORMAT']
+# Set same max line length as Black
+max-line-length = 88
+
+[tool.pylint.'MESSAGES_CONTROL']
+# Disable some pylint messages that I find annoying. You are recommended to
+# review this list and add or remove depending on what you see fit.
+disable = [
+  "fixme"
+]
